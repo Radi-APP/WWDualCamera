@@ -57,10 +57,7 @@ public extension WWDualCamera {
     ///   - videoGravity: AVLayerVideoGravity
     /// - Returns: [CameraSessionOutput]
     func sessionOutputs(delegate: AVCaptureVideoDataOutputSampleBufferDelegate? = nil, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity = .resizeAspectFill) -> [CameraSessionOutput] {
-        
-        var outputs: [CameraSessionOutput] = []
-        outputSetting(delegate: delegate, inputs: inputs, outputs: &outputs, videoGravity: videoGravity)
-        
+        let outputs = outputSetting(delegate: delegate, inputs: inputs, videoGravity: videoGravity)
         return outputs
     }
 }
@@ -73,7 +70,9 @@ private extension WWDualCamera {
     ///   - delegate: AVCaptureVideoDataOutputSampleBufferDelegate?
     ///   - inputs: [CameraSessionInput]
     ///   - outputs: [CameraSessionOutput]
-    func outputSetting(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, inputs: [CameraSessionInput], outputs: inout [CameraSessionOutput], videoGravity: AVLayerVideoGravity) {
+    func outputSetting(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity) -> [CameraSessionOutput] {
+        
+        var outputs: [CameraSessionOutput] = []
         
         inputs.forEach { input in
             
@@ -106,5 +105,7 @@ private extension WWDualCamera {
             
             outputs.append(_output)
         }
+        
+        return outputs
     }
 }
