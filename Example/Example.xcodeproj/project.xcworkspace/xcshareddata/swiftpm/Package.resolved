@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/William-Weng/WWDualCamera",
       "state" : {
-        "revision" : "42de359a982d407c445899cf1203e5e3890c907d",
-        "version" : "1.0.1"
+        "revision" : "71db8f5c90ebe68ab012dbfa7870af45ac9281c2",
+        "version" : "1.0.2"
       }
     }
   ],
