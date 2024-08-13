@@ -21,7 +21,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <subviews>
                                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fvF-Yo-dHy">
-                                        <rect key="frame" x="270" y="16" width="128" height="128"/>
+                                        <rect key="frame" x="270" y="736" width="128" height="128"/>
                                         <color key="backgroundColor" systemColor="systemGrayColor"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="128" id="TIU-XW-e6d"/>
@@ -31,7 +31,7 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemYellowColor"/>
                                 <constraints>
-                                    <constraint firstItem="fvF-Yo-dHy" firstAttribute="top" secondItem="G3Z-EY-Kcd" secondAttribute="top" constant="16" id="IEm-U4-Gfo"/>
+                                    <constraint firstAttribute="bottom" secondItem="fvF-Yo-dHy" secondAttribute="bottom" constant="32" id="OwH-Vt-7q0"/>
                                     <constraint firstAttribute="trailing" secondItem="fvF-Yo-dHy" secondAttribute="trailing" constant="16" id="sOq-JI-esQ"/>
                                 </constraints>
                             </view>
@@ -61,7 +61,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

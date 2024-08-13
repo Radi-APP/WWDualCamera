@@ -32,8 +32,8 @@ private extension ViewController {
     func initSetting() {
         
         let inputs: [WWDualCamera.CameraSessionInput] = [
-            (view: mainView, deviceType: .builtInWideAngleCamera, position: .back),
-            (view: subView, deviceType: .builtInWideAngleCamera, position: .front),
+            (frame: mainView.frame, deviceType: .builtInWideAngleCamera, position: .back),
+            (frame: subView.frame, deviceType: .builtInWideAngleCamera, position: .front),
         ]
         
         let outputs = WWDualCamera.shared.sessionOutputs(inputs: inputs)
@@ -50,7 +50,7 @@ private extension ViewController {
             
             cameraOutputs.append(output)
             cameraPreviewLayers.append(previewLayer)
-            mainView.layer.addSublayer(previewLayer)
+            view.layer.addSublayer(previewLayer)
         }
     }
 }

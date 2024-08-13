@@ -15,7 +15,8 @@
 		8130039027D5D18100436128 /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8130038F27D5D18100436128 /* Constant.swift */; };
 		8130039227D5D19000436128 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8130039127D5D19000436128 /* Extension.swift */; };
 		8153CC8B2C4F915F0025AD46 /* WWDualCamera in Frameworks */ = {isa = PBXBuildFile; productRef = 8153CC8A2C4F915F0025AD46 /* WWDualCamera */; };
-		8153CC8E2C4F935A0025AD46 /* WWDualCamera in Frameworks */ = {isa = PBXBuildFile; productRef = 8153CC8D2C4F935A0025AD46 /* WWDualCamera */; };
+		81D2B48E2C6B5CE000EB1A91 /* WWDualCamera in Frameworks */ = {isa = PBXBuildFile; productRef = 81D2B48D2C6B5CE000EB1A91 /* WWDualCamera */; };
+		81D2B4912C6B5DB400EB1A91 /* WWDualCamera in Frameworks */ = {isa = PBXBuildFile; productRef = 81D2B4902C6B5DB400EB1A91 /* WWDualCamera */; };
 		81D5E18E2C4F864D005E5B99 /* WWDualCamera in Frameworks */ = {isa = PBXBuildFile; productRef = 81D5E18D2C4F864D005E5B99 /* WWDualCamera */; };
 		81D5E1912C4F8665005E5B99 /* WWDualCamera in Frameworks */ = {isa = PBXBuildFile; productRef = 81D5E1902C4F8665005E5B99 /* WWDualCamera */; };
 /* End PBXBuildFile section */
@@ -37,8 +38,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81D2B4912C6B5DB400EB1A91 /* WWDualCamera in Frameworks */,
 				8153CC8B2C4F915F0025AD46 /* WWDualCamera in Frameworks */,
-				8153CC8E2C4F935A0025AD46 /* WWDualCamera in Frameworks */,
+				81D2B48E2C6B5CE000EB1A91 /* WWDualCamera in Frameworks */,
 				81D5E18E2C4F864D005E5B99 /* WWDualCamera in Frameworks */,
 				81D5E1912C4F8665005E5B99 /* WWDualCamera in Frameworks */,
 			);
@@ -138,7 +140,8 @@
 				81D5E18D2C4F864D005E5B99 /* WWDualCamera */,
 				81D5E1902C4F8665005E5B99 /* WWDualCamera */,
 				8153CC8A2C4F915F0025AD46 /* WWDualCamera */,
-				8153CC8D2C4F935A0025AD46 /* WWDualCamera */,
+				81D2B48D2C6B5CE000EB1A91 /* WWDualCamera */,
+				81D2B4902C6B5DB400EB1A91 /* WWDualCamera */,
 			);
 			productName = Example;
 			productReference = 3DBCD87026F198EF00522E3B /* Example.app */;
@@ -169,7 +172,7 @@
 			);
 			mainGroup = 3DBCD86726F198EF00522E3B;
 			packageReferences = (
-				8153CC8C2C4F935A0025AD46 /* XCRemoteSwiftPackageReference "WWDualCamera" */,
+				81D2B48F2C6B5DB400EB1A91 /* XCRemoteSwiftPackageReference "WWDualCamera" */,
 			);
 			productRefGroup = 3DBCD87126F198EF00522E3B /* Products */;
 			projectDirPath = "";
@@ -361,6 +364,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -384,6 +388,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -413,12 +418,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		8153CC8C2C4F935A0025AD46 /* XCRemoteSwiftPackageReference "WWDualCamera" */ = {
+		81D2B48F2C6B5DB400EB1A91 /* XCRemoteSwiftPackageReference "WWDualCamera" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/William-Weng/WWDualCamera";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = 1.0.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -428,9 +433,13 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = WWDualCamera;
 		};
-		8153CC8D2C4F935A0025AD46 /* WWDualCamera */ = {
+		81D2B48D2C6B5CE000EB1A91 /* WWDualCamera */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8153CC8C2C4F935A0025AD46 /* XCRemoteSwiftPackageReference "WWDualCamera" */;
+			productName = WWDualCamera;
+		};
+		81D2B4902C6B5DB400EB1A91 /* WWDualCamera */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81D2B48F2C6B5DB400EB1A91 /* XCRemoteSwiftPackageReference "WWDualCamera" */;
 			productName = WWDualCamera;
 		};
 		81D5E18D2C4F864D005E5B99 /* WWDualCamera */ = {

@@ -12,7 +12,7 @@ import AVFoundation
 open class WWDualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     public typealias CameraSessionInput = (
-        view: UIView,                               // 放在哪個UIView上面
+        frame: CGRect,                              // 放在哪個位置上面
         deviceType: AVCaptureDevice.DeviceType,     // 鏡頭裝置類型
         position: AVCaptureDevice.Position          // 鏡頭前後位置
     )
@@ -88,7 +88,7 @@ private extension WWDualCamera {
                     if (multiSession._canAddInput(_input)) {
                         
                         let output = AVCaptureVideoDataOutput()
-                        let previewLayer = multiSession._previewLayer(with: input.view.frame, videoGravity: videoGravity)
+                        let previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity)
                         
                         output.setSampleBufferDelegate(delegate, queue: DispatchQueue(label: "\(Date().timeIntervalSince1970)"))
                         _output.output = output

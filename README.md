@@ -11,7 +11,7 @@
 ## [Installation with Swift Package Manager](https://medium.com/彼得潘的-swift-ios-app-開發問題解答集/使用-spm-安裝第三方套件-xcode-11-新功能-2c4ffcf85b4b)
 ```bash
 dependencies: [
-    .package(url: "https://github.com/William-Weng/WWDualCamera.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://github.com/William-Weng/WWDualCamera.git", .upToNextMajor(from: "1.0.2"))
 ]
 ```
 
@@ -49,8 +49,8 @@ private extension ViewController {
     func initSetting() {
         
         let inputs: [WWDualCamera.CameraSessionInput] = [
-            (view: mainView, deviceType: .builtInWideAngleCamera, position: .back),
-            (view: subView, deviceType: .builtInWideAngleCamera, position: .front),
+            (frame: mainView.frame, deviceType: .builtInWideAngleCamera, position: .back),
+            (frame: subView.frame, deviceType: .builtInWideAngleCamera, position: .front),
         ]
         
         let outputs = WWDualCamera.shared.sessionOutputs(inputs: inputs)
@@ -67,7 +67,7 @@ private extension ViewController {
             
             cameraOutputs.append(output)
             cameraPreviewLayers.append(previewLayer)
-            mainView.layer.addSublayer(previewLayer)
+            view.layer.addSublayer(previewLayer)
         }
     }
 }
