@@ -24,6 +24,12 @@ open class WWDualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate 
         error: Error?                               // 錯誤
     )
     
+    /// [是否支援多鏡頭同時動作](https://developer.apple.com/documentation/avfoundation/avcapturemulticamsession/3183002-multicamsupported)
+    public var isMultiCamSupported: Bool { AVCaptureMultiCamSession.isMultiCamSupported }
+    
+    /// 是否正在預覽畫面
+    public var isRunning: Bool { multiSession.isRunning }
+    
     private var multiSession = AVCaptureMultiCamSession()
     
     private override init() {}
@@ -42,12 +48,6 @@ public extension WWDualCamera {
     /// 關閉執行
     func stop() {
         multiSession.stopRunning()
-    }
-    
-    /// [是否支援多鏡頭同時動作](https://developer.apple.com/documentation/avfoundation/avcapturemulticamsession/3183002-multicamsupported)
-    /// - Returns: Bool
-    func multiCamSupported() -> Bool {
-        return AVCaptureMultiCamSession.isMultiCamSupported
     }
     
     /// 產生輸出資訊
