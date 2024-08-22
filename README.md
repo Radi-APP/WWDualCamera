@@ -27,6 +27,8 @@ dependencies: [
 |start()|開始執行|
 |stop()|關閉執行|
 |sessionOutputs(delegate:inputs:videoGravity:)|產生輸出資訊|
+|cleanInputs(_:)|清除輸入裝置|
+|cleanAllInputs()|清除所有輸入裝置|
 
 ### Example
 ```swift

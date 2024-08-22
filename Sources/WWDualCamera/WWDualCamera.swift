@@ -18,7 +18,7 @@ open class WWDualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate 
     )
     
     public typealias CameraSessionOutput = (
-        deviceType: AVCaptureDevice.DeviceType,     // 鏡頭裝置類型
+        device: AVCaptureDevice?,                   // 鏡頭裝置
         output: AVCaptureVideoDataOutput?,          // 影像輸出
         previewLayer: AVCaptureVideoPreviewLayer?,  // 預覽畫面
         error: Error?                               // 錯誤
@@ -50,6 +50,20 @@ public extension WWDualCamera {
         multiSession.stopRunning()
     }
     
+    /// 清除輸入裝置
+    /// - Parameter inputs: [AVCaptureInput]
+    /// - Returns: AVCaptureMultiCamSession所剩下的inputs
+    func cleanInputs(_ inputs: [AVCaptureInput]) -> [AVCaptureInput] {
+        inputs.forEach { multiSession.removeInput($0) }
+        return multiSession.inputs
+    }
+    
+    /// 清除所有輸入裝置
+    /// - Returns: AVCaptureMultiCamSession所剩下的inputs
+    func cleanAllInputs() -> [AVCaptureInput] {
+        cleanInputs(multiSession.inputs)
+    }
+    
     /// 產生輸出資訊
     /// - Parameters:
     ///   - delegate: AVCaptureVideoDataOutputSampleBufferDelegate?
@@ -77,12 +91,12 @@ private extension WWDualCamera {
         inputs.forEach { input in
             
             let _device = AVCaptureDevice.DiscoverySession(deviceTypes: [input.deviceType], mediaType: .video, position: input.position).devices.first
-            var _output: CameraSessionOutput = (deviceType: input.deviceType, output: nil, previewLayer: nil, error: nil)
+            var _output: CameraSessionOutput = (device: _device, output: nil, previewLayer: nil, error: nil)
             
             if let _device = _device {
                 
                 switch _device._captureInput() {
-                case .failure(let error): outputs.append((deviceType: input.deviceType, output: nil, previewLayer: nil, error: error))
+                case .failure(let error): outputs.append((device: nil, output: nil, previewLayer: nil, error: error))
                 case .success(let _input):
                     
                     if (multiSession._canAddInput(_input)) {
