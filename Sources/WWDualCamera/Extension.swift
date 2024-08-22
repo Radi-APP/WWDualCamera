@@ -40,6 +40,14 @@ extension AVCaptureSession {
         return true
     }
     
+    /// 將影音的Output加入Session
+    /// - Parameter input: AVCaptureOutput
+    /// - Returns: Bool
+    func _canAddOutput(_ output: AVCaptureOutput) -> Bool {
+        guard self.canAddOutput(output) else { return false }
+        self.addOutput(output); return true
+    }
+    
     /// [產生、設定AVCaptureVideoPreviewLayer](https://www.jianshu.com/p/95f2cd87ad83)
     /// - Parameters:
     ///   - frame: CGRect

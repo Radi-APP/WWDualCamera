@@ -26,9 +26,12 @@ dependencies: [
 |-|-|
 |start()|開始執行|
 |stop()|關閉執行|
+|addPhotoOutputs(_:)|加入圖片輸出|
 |sessionOutputs(delegate:inputs:videoGravity:)|產生輸出資訊|
 |cleanInputs(_:)|清除輸入裝置|
 |cleanAllInputs()|清除所有輸入裝置|
+|cleanOutputs(_:)|清除輸出裝置|
+|cleanAllOutputs()|清除所有輸出裝置|
 
 ### Example
 ```swift

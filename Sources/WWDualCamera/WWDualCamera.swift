@@ -9,7 +9,7 @@ import UIKit
 import AVFoundation
 
 /// MARK: - 產生雙鏡頭輸出
-open class WWDualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+open class WWDualCamera: NSObject {
     
     public typealias CameraSessionInput = (
         frame: CGRect,                              // 放在哪個位置上面
@@ -39,7 +39,7 @@ open class WWDualCamera: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate 
 
 /// MARK: - 公開工具
 public extension WWDualCamera {
-
+    
     /// 開始執行
     func start() {
         multiSession.startRunning()
@@ -48,6 +48,17 @@ public extension WWDualCamera {
     /// 關閉執行
     func stop() {
         multiSession.stopRunning()
+    }
+    
+    /// 加入圖片輸出
+    /// - Parameter outputs: [AVCapturePhotoOutput]
+    /// - Returns: Bool
+    func addPhotoOutputs(_ outputs: inout [AVCapturePhotoOutput]) -> Bool {
+        
+        var isSuccess = true
+        outputs.forEach { isSuccess = isSuccess && multiSession._canAddOutput($0) }
+        
+        return isSuccess
     }
     
     /// 清除輸入裝置
@@ -62,6 +73,20 @@ public extension WWDualCamera {
     /// - Returns: AVCaptureMultiCamSession所剩下的inputs
     func cleanAllInputs() -> [AVCaptureInput] {
         cleanInputs(multiSession.inputs)
+    }
+    
+    /// 清除輸出裝置
+    /// - Parameter inputs: [AVCaptureInput]
+    /// - Returns: AVCaptureMultiCamSession所剩下的outputs
+    func cleanOutputs(_ outputs: [AVCaptureOutput]) -> [AVCaptureOutput] {
+        outputs.forEach { multiSession.removeOutput($0) }
+        return multiSession.outputs
+    }
+    
+    /// 清除所有輸出裝置
+    /// - Returns: AVCaptureMultiCamSession所剩下的outputs
+    func cleanAllOutputs() -> [AVCaptureOutput] {
+        cleanOutputs(multiSession.outputs)
     }
     
     /// 產生輸出資訊
@@ -107,7 +132,7 @@ private extension WWDualCamera {
                         output.setSampleBufferDelegate(delegate, queue: DispatchQueue(label: "\(Date().timeIntervalSince1970)"))
                         _output.output = output
                         _output.previewLayer = previewLayer
-                        
+                                                                                                
                     } else {
                         _output.error = Constant.MyError.addInput
                     }
