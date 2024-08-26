@@ -109,7 +109,10 @@ private extension WWDualCamera {
     ///   - delegate: AVCaptureVideoDataOutputSampleBufferDelegate?
     ///   - inputs: [CameraSessionInput]
     ///   - outputs: [CameraSessionOutput]
-    func outputSetting(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity) -> [CameraSessionOutput] {
+    ///   - videoGravity: AVLayerVideoGravity
+    ///   - alwaysDiscardsLateVideoFrames: [Bool](https://blog.csdn.net/github_36843038/article/details/114550865)
+    /// - Returns: [CameraSessionOutput]
+    func outputSetting(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity, alwaysDiscardsLateVideoFrames: Bool = true) -> [CameraSessionOutput] {
         
         var outputs: [CameraSessionOutput] = []
         
@@ -126,10 +129,13 @@ private extension WWDualCamera {
                     
                     if (multiSession._canAddInput(_input)) {
                         
+                        let queue = DispatchQueue(label: "\(Date().timeIntervalSince1970)")
                         let output = AVCaptureVideoDataOutput()
                         let previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity)
                         
-                        output.setSampleBufferDelegate(delegate, queue: DispatchQueue(label: "\(Date().timeIntervalSince1970)"))
+                        output.setSampleBufferDelegate(delegate, queue: queue)
+                        output.alwaysDiscardsLateVideoFrames = alwaysDiscardsLateVideoFrames
+                        
                         _output.output = output
                         _output.previewLayer = previewLayer
                                                                                                 
