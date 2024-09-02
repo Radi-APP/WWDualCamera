@@ -24,6 +24,11 @@ open class WWDualCamera: NSObject {
         error: Error?                               // 錯誤
     )
     
+    public typealias MultiCamSessionCost = (
+        hardware: Float,                            // 硬體壓力 (0.0 ~ 1.0)
+        systemPressure: Float                       // 系統壓力 (0.0 ~ 1.0)
+    )
+    
     /// [是否支援多鏡頭同時動作](https://developer.apple.com/documentation/avfoundation/avcapturemulticamsession/3183002-multicamsupported)
     public var isMultiCamSupported: Bool { AVCaptureMultiCamSession.isMultiCamSupported }
     
@@ -41,13 +46,17 @@ open class WWDualCamera: NSObject {
 public extension WWDualCamera {
     
     /// 開始執行
-    func start() {
+    /// - Returns: 有連上Session的Connection
+    func start() -> [AVCaptureConnection] {
         multiSession.startRunning()
+        return multiSession.connections
     }
     
     /// 關閉執行
-    func stop() {
+    /// - Returns: 有連上Session的Connection
+    func stop() -> [AVCaptureConnection] {
         multiSession.stopRunning()
+        return multiSession.connections
     }
     
     /// 加入圖片輸出
@@ -99,6 +108,12 @@ public extension WWDualCamera {
         let outputs = outputSetting(delegate: delegate, inputs: inputs, videoGravity: videoGravity)
         return outputs
     }
+    
+    /// [硬體 / 系統的用量指標](https://xiaodongxie1024.github.io/2019/04/15/20190413_iOS_VideoCaptureExplain/)
+    /// - Returns: SessionCost
+    func cost() -> MultiCamSessionCost {
+        return multiSession._cost()
+    }
 }
 
 /// MARK: - 小工具
@@ -138,7 +153,7 @@ private extension WWDualCamera {
                         
                         _output.output = output
                         _output.previewLayer = previewLayer
-                                                                                                
+                        
                     } else {
                         _output.error = Constant.MyError.addInput
                     }

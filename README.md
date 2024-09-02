@@ -32,6 +32,7 @@ dependencies: [
 |cleanAllInputs()|清除所有輸入裝置|
 |cleanOutputs(_:)|清除輸出裝置|
 |cleanAllOutputs()|清除所有輸出裝置|
+|cost()|硬體 / 系統的用量指標|
 
 ### Example
 ```swift

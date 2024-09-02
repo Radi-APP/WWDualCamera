@@ -50,16 +50,26 @@ extension AVCaptureSession {
     
     /// [產生、設定AVCaptureVideoPreviewLayer](https://www.jianshu.com/p/95f2cd87ad83)
     /// - Parameters:
-    ///   - frame: CGRect
-    ///   - videoGravity: AVLayerVideoGravity => .resizeAspectFill
+    ///   - frame: [CGRect](https://developer.apple.com/documentation/avfoundation/avcapturevideopreviewlayer/1387426-init)
+    ///   - videoGravity: [AVLayerVideoGravity => .resizeAspectFill](https://xiaodongxie1024.github.io/2019/04/15/20190413_iOS_VideoCaptureExplain/)
     /// - Returns: AVCaptureVideoPreviewLayer
     func _previewLayer(with frame: CGRect, videoGravity: AVLayerVideoGravity) -> AVCaptureVideoPreviewLayer {
         
-        let previewLayer = AVCaptureVideoPreviewLayer(session: self)
+        let previewLayer =  AVCaptureVideoPreviewLayer(session: self)
         
         previewLayer.frame = frame
         previewLayer.videoGravity = videoGravity
         
         return previewLayer
+    }
+}
+
+// MARK: - AVCaptureMultiCamSession
+extension AVCaptureMultiCamSession {
+    
+    /// [硬體 / 系統的用量指標](https://xiaodongxie1024.github.io/2019/04/15/20190413_iOS_VideoCaptureExplain/)
+    /// - Returns: SessionCost
+    func _cost() -> Constant.MultiCamSessionCost {
+        return (hardware: hardwareCost, systemPressure: systemPressureCost)
     }
 }
