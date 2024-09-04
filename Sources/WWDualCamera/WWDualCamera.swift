@@ -48,6 +48,7 @@ public extension WWDualCamera {
     /// 開始執行
     /// - Returns: 有連上Session的Connection
     func start() -> [AVCaptureConnection] {
+        
         multiSession.startRunning()
         return multiSession.connections
     }
@@ -55,6 +56,7 @@ public extension WWDualCamera {
     /// 關閉執行
     /// - Returns: 有連上Session的Connection
     func stop() -> [AVCaptureConnection] {
+        
         multiSession.stopRunning()
         return multiSession.connections
     }
