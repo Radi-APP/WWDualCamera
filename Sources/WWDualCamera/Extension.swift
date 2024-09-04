@@ -7,6 +7,16 @@
 
 import AVFoundation
 
+// MARK: - AVCaptureMultiCamSession
+extension AVCaptureMultiCamSession {
+    
+    /// [硬體 / 系統的用量指標](https://xiaodongxie1024.github.io/2019/04/15/20190413_iOS_VideoCaptureExplain/)
+    /// - Returns: SessionCost
+    func _cost() -> Constant.MultiCamSessionCost {
+        return (hardware: hardwareCost, systemPressure: systemPressureCost)
+    }
+}
+
 // MARK: - AVCaptureDevice (function)
 extension AVCaptureDevice {
     
@@ -64,12 +74,24 @@ extension AVCaptureSession {
     }
 }
 
-// MARK: - AVCaptureMultiCamSession
-extension AVCaptureMultiCamSession {
+// MARK: - AVCaptureVideoDataOutput (static function)
+extension AVCaptureVideoDataOutput {
     
-    /// [硬體 / 系統的用量指標](https://xiaodongxie1024.github.io/2019/04/15/20190413_iOS_VideoCaptureExplain/)
-    /// - Returns: SessionCost
-    func _cost() -> Constant.MultiCamSessionCost {
-        return (hardware: hardwareCost, systemPressure: systemPressureCost)
+    /// 建立AVCaptureVideoDataOutput (影像)
+    /// - Parameters:
+    ///   - delegate: AVCaptureVideoDataOutputSampleBufferDelegate?
+    ///   - videoSettings: [String : Any]?
+    ///   - queue: DispatchQueue?
+    ///   - isAlwaysDiscardsLateVideoFrames: [Bool](https://blog.csdn.net/github_36843038/article/details/114550865)
+    /// - Returns: AVCaptureVideoDataOutput
+    static func _build(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, isAlwaysDiscardsLateVideoFrames: Bool, videoSettings: [String : Any] = [:], queue: DispatchQueue?) -> AVCaptureVideoDataOutput {
+        
+        let output = AVCaptureVideoDataOutput()
+        
+        output.videoSettings = videoSettings
+        output.setSampleBufferDelegate(delegate, queue: queue)
+        output.alwaysDiscardsLateVideoFrames = isAlwaysDiscardsLateVideoFrames
+        
+        return output
     }
 }

@@ -127,9 +127,9 @@ private extension WWDualCamera {
     ///   - inputs: [CameraSessionInput]
     ///   - outputs: [CameraSessionOutput]
     ///   - videoGravity: AVLayerVideoGravity
-    ///   - alwaysDiscardsLateVideoFrames: [Bool](https://blog.csdn.net/github_36843038/article/details/114550865)
+    ///   - isAlwaysDiscardsLateVideoFrames: [Bool](https://blog.csdn.net/github_36843038/article/details/114550865)
     /// - Returns: [CameraSessionOutput]
-    func outputSetting(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity, alwaysDiscardsLateVideoFrames: Bool = true) -> [CameraSessionOutput] {
+    func outputSetting(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity, isAlwaysDiscardsLateVideoFrames: Bool = true) -> [CameraSessionOutput] {
         
         var outputs: [CameraSessionOutput] = []
         
@@ -141,20 +141,19 @@ private extension WWDualCamera {
             if let _device = _device {
                 
                 switch _device._captureInput() {
+                
                 case .failure(let error): outputs.append((device: nil, output: nil, previewLayer: nil, error: error))
                 case .success(let _input):
                     
                     if (multiSession._canAddInput(_input)) {
                         
                         let queue = DispatchQueue(label: "\(Date().timeIntervalSince1970)")
-                        let output = AVCaptureVideoDataOutput()
-                        let previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity)
+                        let output = AVCaptureVideoDataOutput._build(delegate: delegate, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, queue: queue)
                         
-                        output.setSampleBufferDelegate(delegate, queue: queue)
-                        output.alwaysDiscardsLateVideoFrames = alwaysDiscardsLateVideoFrames
-                        
-                        _output.output = output
-                        _output.previewLayer = previewLayer
+                        if (multiSession._canAddOutput(output)) {
+                            _output.output = output
+                            _output.previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity)
+                        }
                         
                     } else {
                         _output.error = Constant.MyError.addInput
@@ -167,7 +166,7 @@ private extension WWDualCamera {
             
             outputs.append(_output)
         }
-        
+                
         return outputs
     }
 }
