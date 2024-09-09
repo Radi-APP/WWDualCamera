@@ -61,10 +61,21 @@ public extension WWDualCamera {
         return multiSession.connections
     }
     
-    /// 加入圖片輸出
-    /// - Parameter outputs: [AVCapturePhotoOutput]
+    /// 加入額外裝置輸入
+    /// - Parameter inputs: [AVCaptureInput]
     /// - Returns: Bool
-    func addPhotoOutputs(_ outputs: inout [AVCapturePhotoOutput]) -> Bool {
+    func addInputs<T: AVCaptureInput>(_ inputs: [T]) -> Bool {
+        
+        var isSuccess = true
+        inputs.forEach { isSuccess = isSuccess && multiSession._canAddInput($0)}
+        
+        return isSuccess
+    }
+    
+    /// 加入額外資源輸出
+    /// - Parameter outputs: [AVCaptureOutput]
+    /// - Returns: Bool
+    func addOutputs<T: AVCaptureOutput>(_ outputs: [T]) -> Bool {
         
         var isSuccess = true
         outputs.forEach { isSuccess = isSuccess && multiSession._canAddOutput($0) }

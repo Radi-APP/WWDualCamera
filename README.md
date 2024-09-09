@@ -26,7 +26,8 @@ dependencies: [
 |-|-|
 |start()|開始執行|
 |stop()|關閉執行|
-|addPhotoOutputs(_:)|加入圖片輸出|
+|addInputs(_:)|加入額外裝置輸入|
+|addOutputs(_:)|加入額外資源輸出|
 |sessionOutputs(delegate:inputs:videoGravity:)|產生輸出資訊|
 |cleanInputs(_:)|清除輸入裝置|
 |cleanAllInputs()|清除所有輸入裝置|
