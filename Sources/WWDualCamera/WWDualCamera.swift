@@ -46,7 +46,7 @@ open class WWDualCamera: NSObject {
 public extension WWDualCamera {
     
     /// 開始執行
-    /// - Returns: 有連上Session的Connection
+    /// - Returns: Result<[AVCaptureConnection], Error>
     func start() -> [AVCaptureConnection] {
         
         multiSession.startRunning()
@@ -159,7 +159,7 @@ private extension WWDualCamera {
                     if (multiSession._canAddInput(_input)) {
                         
                         let queue = DispatchQueue(label: "\(Date().timeIntervalSince1970)")
-                        let output = AVCaptureVideoDataOutput._build(delegate: delegate, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, queue: queue)
+                        let output = AVCaptureVideoDataOutput._build(delegate: delegate, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, videoSettings: [:], queue: queue)
                         
                         if (multiSession._canAddOutput(output)) {
                             _output.output = output

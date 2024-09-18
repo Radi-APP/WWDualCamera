@@ -84,7 +84,7 @@ extension AVCaptureVideoDataOutput {
     ///   - queue: DispatchQueue?
     ///   - isAlwaysDiscardsLateVideoFrames: [Bool](https://blog.csdn.net/github_36843038/article/details/114550865)
     /// - Returns: AVCaptureVideoDataOutput
-    static func _build(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, isAlwaysDiscardsLateVideoFrames: Bool, videoSettings: [String : Any] = [:], queue: DispatchQueue?) -> AVCaptureVideoDataOutput {
+    static func _build(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, isAlwaysDiscardsLateVideoFrames: Bool, videoSettings: [String : Any], queue: DispatchQueue?) -> AVCaptureVideoDataOutput {
         
         let output = AVCaptureVideoDataOutput()
         
