@@ -11,7 +11,7 @@
 ### [Installation with Swift Package Manager](https://medium.com/彼得潘的-swift-ios-app-開發問題解答集/使用-spm-安裝第三方套件-xcode-11-新功能-2c4ffcf85b4b)
 ```bash
 dependencies: [
-    .package(url: "https://github.com/William-Weng/WWDualCamera.git", .upToNextMajor(from: "1.0.2"))
+    .package(url: "https://github.com/William-Weng/WWDualCamera.git", .upToNextMajor(from: "1.1.0"))
 ]
 ```
 
@@ -26,13 +26,14 @@ dependencies: [
 |-|-|
 |start()|開始執行|
 |stop()|關閉執行|
-|addInputs(_:)|加入額外裝置輸入|
-|addOutputs(_:)|加入額外資源輸出|
+|addInputs(_:isConnections:)|加入額外裝置輸入 (可以不連接)|
+|addOutputs(_:isConnections:)|加入額外資源輸出 (可以不連接)|
+|configuration(action:)|相關的設定 (切換硬體)|
 |sessionOutputs(delegate:inputs:videoGravity:)|產生輸出資訊|
-|cleanInputs(_:)|清除輸入裝置|
-|cleanAllInputs()|清除所有輸入裝置|
-|cleanOutputs(_:)|清除輸出裝置|
-|cleanAllOutputs()|清除所有輸出裝置|
+|removeInputs(_:)|移除輸入裝置|
+|removeAllInputs()|移除所有輸入裝置|
+|removeOutputs(_:)|移除輸出裝置|
+|removeAllOutputs()|移除所有輸出裝置|
 |cost()|硬體 / 系統的用量指標|
 
 ### Example

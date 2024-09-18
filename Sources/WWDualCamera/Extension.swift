@@ -35,27 +35,38 @@ extension AVCaptureDevice {
 // MARK: - AVCaptureSession (function)
 extension AVCaptureSession {
     
-    /// 將影音的Input加入Session
-    /// - Parameter input: AVCaptureInput
+    /// 將影音的Input加入Session (可以不連接)
+    /// - Parameters:
+    ///   - input: AVCaptureInput?
+    ///   - isConnections: [Bool](https://www.cnblogs.com/zouchenxi/p/14900858.html)
     /// - Returns: Bool
-    func _canAddInput(_ input: AVCaptureInput?) -> Bool {
+    func _canAddInput(_ input: AVCaptureInput?, isConnections: Bool) -> Bool {
         
         guard let input = input,
-              self.canAddInput(input)
+              canAddInput(input)
         else {
             return false
         }
         
-        self.addInput(input)
+        (isConnections) ? addInput(input) : addInputWithNoConnections(input)
         return true
     }
     
-    /// 將影音的Output加入Session
-    /// - Parameter input: AVCaptureOutput
+    /// 將影音的Output加入Session (可以不連接)
+    /// - Parameters:
+    ///   - output: AVCaptureOutput?
+    ///   - isConnections: Bool
     /// - Returns: Bool
-    func _canAddOutput(_ output: AVCaptureOutput) -> Bool {
-        guard self.canAddOutput(output) else { return false }
-        self.addOutput(output); return true
+    func _canAddOutput(_ output: AVCaptureOutput?, isConnections: Bool) -> Bool {
+        
+        guard let output = output,
+              canAddOutput(output)
+        else {
+            return false
+        }
+        
+        (isConnections) ? addOutput(output) : addOutputWithNoConnections(output)
+        return true
     }
     
     /// [產生、設定AVCaptureVideoPreviewLayer](https://www.jianshu.com/p/95f2cd87ad83)

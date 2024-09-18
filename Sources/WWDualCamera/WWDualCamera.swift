@@ -61,54 +61,67 @@ public extension WWDualCamera {
         return multiSession.connections
     }
     
-    /// 加入額外裝置輸入
-    /// - Parameter inputs: [AVCaptureInput]
+    /// 加入額外裝置輸入 (可以不連接)
     /// - Returns: Bool
-    func addInputs<T: AVCaptureInput>(_ inputs: [T]) -> Bool {
+    /// - Parameters:
+    ///   - inputs: [AVCaptureInput]
+    ///   - isConnections: Bool
+    func addInputs<T: AVCaptureInput>(_ inputs: [T], isConnections: Bool = true) -> Bool {
         
         var isSuccess = true
-        inputs.forEach { isSuccess = isSuccess && multiSession._canAddInput($0)}
+        inputs.forEach { isSuccess = isSuccess && multiSession._canAddInput($0, isConnections: isConnections)}
         
         return isSuccess
     }
     
-    /// 加入額外資源輸出
-    /// - Parameter outputs: [AVCaptureOutput]
+    /// 加入額外資源輸出 (可以不連接)
+    /// - Parameters:
+    ///   - outputs: [AVCaptureOutput]
+    ///   - isConnections: Bool
     /// - Returns: Bool
-    func addOutputs<T: AVCaptureOutput>(_ outputs: [T]) -> Bool {
+    func addOutputs<T: AVCaptureOutput>(_ outputs: [T], isConnections: Bool = true) -> Bool {
         
         var isSuccess = true
-        outputs.forEach { isSuccess = isSuccess && multiSession._canAddOutput($0) }
+        outputs.forEach { isSuccess = isSuccess && multiSession._canAddOutput($0, isConnections: isConnections) }
         
         return isSuccess
     }
     
-    /// 清除輸入裝置
+    /// 相關的設定 (切換硬體)
+    /// - Parameter action: AVCaptureMultiCamSession
+    func configuration(action: (AVCaptureMultiCamSession) -> Void) {
+        
+        multiSession.beginConfiguration()
+        action(multiSession)
+        multiSession.commitConfiguration()
+    }
+    
+    /// 移除輸入裝置
     /// - Parameter inputs: [AVCaptureInput]
     /// - Returns: AVCaptureMultiCamSession所剩下的inputs
-    func cleanInputs(_ inputs: [AVCaptureInput]) -> [AVCaptureInput] {
+    func removeInputs(_ inputs: [AVCaptureInput]) -> [AVCaptureInput] {
         inputs.forEach { multiSession.removeInput($0) }
         return multiSession.inputs
     }
     
-    /// 清除所有輸入裝置
+    /// 移除所有輸入裝置
     /// - Returns: AVCaptureMultiCamSession所剩下的inputs
-    func cleanAllInputs() -> [AVCaptureInput] {
-        cleanInputs(multiSession.inputs)
+    func removeAllInputs() -> [AVCaptureInput] {
+        removeInputs(multiSession.inputs)
     }
     
-    /// 清除輸出裝置
+    /// 移除輸出裝置
     /// - Parameter inputs: [AVCaptureInput]
     /// - Returns: AVCaptureMultiCamSession所剩下的outputs
-    func cleanOutputs(_ outputs: [AVCaptureOutput]) -> [AVCaptureOutput] {
+    func removeOutputs(_ outputs: [AVCaptureOutput]) -> [AVCaptureOutput] {
         outputs.forEach { multiSession.removeOutput($0) }
         return multiSession.outputs
     }
     
-    /// 清除所有輸出裝置
+    /// 移除所有輸出裝置
     /// - Returns: AVCaptureMultiCamSession所剩下的outputs
-    func cleanAllOutputs() -> [AVCaptureOutput] {
-        cleanOutputs(multiSession.outputs)
+    func removeAllOutputs() -> [AVCaptureOutput] {
+        removeOutputs(multiSession.outputs)
     }
     
     /// 產生輸出資訊
@@ -156,12 +169,12 @@ private extension WWDualCamera {
                 case .failure(let error): outputs.append((device: nil, output: nil, previewLayer: nil, error: error))
                 case .success(let _input):
                     
-                    if (multiSession._canAddInput(_input)) {
+                    if (multiSession._canAddInput(_input, isConnections: true)) {
                         
                         let queue = DispatchQueue(label: "\(Date().timeIntervalSince1970)")
                         let output = AVCaptureVideoDataOutput._build(delegate: delegate, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, videoSettings: [:], queue: queue)
                         
-                        if (multiSession._canAddOutput(output)) {
+                        if (multiSession._canAddOutput(output, isConnections: true)) {
                             _output.output = output
                             _output.previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity)
                         }
