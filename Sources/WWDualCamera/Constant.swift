@@ -21,7 +21,8 @@ extension Constant {
     
     enum MyError: Error {
         case deviceIsEmpty  // 抓不到該鏡頭
-        case addInput       // 無法加入輸入鏡頭
+        case notAddInput    // 無法加入輸入裝置
+        case notAddOutput   // 無法加入資料輸出
         case notSupport     // 不支援該功能
     }
 }

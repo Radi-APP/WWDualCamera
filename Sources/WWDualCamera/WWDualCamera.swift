@@ -162,35 +162,27 @@ private extension WWDualCamera {
             let _device = AVCaptureDevice.DiscoverySession(deviceTypes: [input.deviceType], mediaType: .video, position: input.position).devices.first
             var _output: CameraSessionOutput = (device: _device, output: nil, previewLayer: nil, error: nil)
             
-            if let _device = _device {
-                
-                switch _device._captureInput() {
-                
-                case .failure(let error): outputs.append((device: nil, output: nil, previewLayer: nil, error: error))
-                case .success(let _input):
-                    
-                    if (multiSession._canAddInput(_input, isConnections: true)) {
-                        
-                        let queue = DispatchQueue(label: "\(Date().timeIntervalSince1970)")
-                        let output = AVCaptureVideoDataOutput._build(delegate: delegate, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, videoSettings: [:], queue: queue)
-                        
-                        if (multiSession._canAddOutput(output, isConnections: true)) {
-                            _output.output = output
-                            _output.previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity)
-                        }
-                        
-                    } else {
-                        _output.error = Constant.MyError.addInput
-                    }
-                }
-                
-            } else {
-                _output.error = Constant.MyError.deviceIsEmpty
-            }
+            defer { outputs.append(_output) }
             
-            outputs.append(_output)
-        }
+            guard let _device = _device else { _output.error = Constant.MyError.deviceIsEmpty; return }
+            
+            switch _device._captureInput() {
+            
+            case .failure(let error): _output.error = error
+            case .success(let _input):
                 
+                guard multiSession._canAddInput(_input, isConnections: true) else { _output.error = Constant.MyError.notAddInput; return }
+                
+                let queue = DispatchQueue(label: "\(Date().timeIntervalSince1970)")
+                let output = AVCaptureVideoDataOutput._build(delegate: delegate, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, videoSettings: [:], queue: queue)
+                
+                guard multiSession._canAddOutput(output, isConnections: true) else { _output.error = Constant.MyError.notAddOutput; return }
+                
+                _output.output = output
+                _output.previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity)
+            }
+        }
+        
         return outputs
     }
 }
