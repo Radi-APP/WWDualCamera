@@ -34,7 +34,7 @@ extension AVCaptureDevice {
 
 // MARK: - AVCaptureSession (function)
 extension AVCaptureSession {
-    
+        
     /// 將影音的Input加入Session (可以不連接)
     /// - Parameters:
     ///   - input: AVCaptureInput?
@@ -76,7 +76,7 @@ extension AVCaptureSession {
     /// - Returns: AVCaptureVideoPreviewLayer
     func _previewLayer(with frame: CGRect, videoGravity: AVLayerVideoGravity) -> AVCaptureVideoPreviewLayer {
         
-        let previewLayer =  AVCaptureVideoPreviewLayer(session: self)
+        let previewLayer = AVCaptureVideoPreviewLayer(session: self)
         
         previewLayer.frame = frame
         previewLayer.videoGravity = videoGravity
