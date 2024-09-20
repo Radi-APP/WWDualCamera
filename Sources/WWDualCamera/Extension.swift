@@ -106,3 +106,33 @@ extension AVCaptureVideoDataOutput {
         return output
     }
 }
+
+// MARK: - AVCaptureVideoPreviewLayer (function)
+extension AVCaptureVideoPreviewLayer {
+    
+    /// 設定防手震模式
+    /// - Parameters:
+    ///   - mode: AVCaptureVideoStabilizationMode
+    ///   - device: AVCaptureDevice
+    /// - Returns: Bool
+    func _stabilizationMode(_ mode: AVCaptureVideoStabilizationMode, device: AVCaptureDevice) -> Bool {
+        return connection?._stabilizationMode(mode, device: device) ?? false
+    }
+}
+
+// MARK: - AVCaptureConnection (function)
+extension AVCaptureConnection {
+    
+    /// [設定防手震模式](https://stackoverflow.com/questions/77030040/how-to-activate-preferredvideostabilizationmode-for-avcapturesessionpresetphoto)
+    /// - Parameters:
+    ///   - mode: AVCaptureVideoStabilizationMode
+    ///   - device: AVCaptureDevice
+    /// - Returns: Bool
+    func _stabilizationMode(_ mode: AVCaptureVideoStabilizationMode, device: AVCaptureDevice) -> Bool {
+        
+        guard device.activeFormat.isVideoStabilizationModeSupported(mode) else { return false }
+        
+        preferredVideoStabilizationMode = mode
+        return true
+    }
+}

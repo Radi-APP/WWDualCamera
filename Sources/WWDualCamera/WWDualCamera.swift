@@ -92,8 +92,9 @@ public extension WWDualCamera {
     func configuration(action: (AVCaptureMultiCamSession) -> Void) {
         
         multiSession.beginConfiguration()
+        defer { multiSession.commitConfiguration() }
+        
         action(multiSession)
-        multiSession.commitConfiguration()
     }
     
     /// 移除輸入裝置
@@ -129,9 +130,11 @@ public extension WWDualCamera {
     ///   - delegate: AVCaptureVideoDataOutputSampleBufferDelegate?
     ///   - inputs: [CameraSessionInput]
     ///   - videoGravity: AVLayerVideoGravity
+    ///   - stabilizationMode: AVCaptureVideoStabilizationMode
     /// - Returns: [CameraSessionOutput]
-    func sessionOutputs(delegate: AVCaptureVideoDataOutputSampleBufferDelegate? = nil, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity = .resizeAspectFill) -> [CameraSessionOutput] {
-        let outputs = outputSetting(delegate: delegate, inputs: inputs, videoGravity: videoGravity)
+    func sessionOutputs(delegate: AVCaptureVideoDataOutputSampleBufferDelegate? = nil, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity = .resizeAspectFill, stabilizationMode: AVCaptureVideoStabilizationMode = .auto) -> [CameraSessionOutput] {
+        
+        let outputs = outputSetting(delegate: delegate, inputs: inputs, videoGravity: videoGravity, isAlwaysDiscardsLateVideoFrames: true, stabilizationMode: stabilizationMode)
         return outputs
     }
     
@@ -153,7 +156,7 @@ private extension WWDualCamera {
     ///   - videoGravity: AVLayerVideoGravity
     ///   - isAlwaysDiscardsLateVideoFrames: [Bool](https://blog.csdn.net/github_36843038/article/details/114550865)
     /// - Returns: [CameraSessionOutput]
-    func outputSetting(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity, isAlwaysDiscardsLateVideoFrames: Bool = true) -> [CameraSessionOutput] {
+    func outputSetting(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity, isAlwaysDiscardsLateVideoFrames: Bool, stabilizationMode: AVCaptureVideoStabilizationMode) -> [CameraSessionOutput] {
         
         var outputs: [CameraSessionOutput] = []
         
@@ -178,8 +181,11 @@ private extension WWDualCamera {
                 
                 guard multiSession._canAddOutput(output, isConnections: true) else { _output.error = Constant.MyError.notAddOutput; return }
                 
+                let previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity)
+                previewLayer._stabilizationMode(stabilizationMode, device: _device)
+                
                 _output.output = output
-                _output.previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity)
+                _output.previewLayer = previewLayer
             }
         }
         

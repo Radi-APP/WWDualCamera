@@ -29,7 +29,7 @@ dependencies: [
 |addInputs(_:isConnections:)|加入額外裝置輸入 (可以不連接)|
 |addOutputs(_:isConnections:)|加入額外資源輸出 (可以不連接)|
 |configuration(action:)|相關的設定 (切換硬體)|
-|sessionOutputs(delegate:inputs:videoGravity:)|產生輸出資訊|
+|sessionOutputs(delegate:inputs:videoGravity:stabilizationMode:)|產生輸出資訊|
 |removeInputs(_:)|移除輸入裝置|
 |removeAllInputs()|移除所有輸入裝置|
 |removeOutputs(_:)|移除輸出裝置|
