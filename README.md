@@ -18,6 +18,7 @@ dependencies: [
 ### Parameter - 可用參數
 |參數|說明|
 |-|-|
+|multiSession|AVCaptureMultiCamSession|
 |isMultiCamSupported|是否支援多鏡頭同時動作|
 |isRunning|是否正在預覽畫面|
 
