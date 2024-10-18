@@ -21,7 +21,7 @@ final class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         initSetting()
-        WWDualCamera.shared.start()
+        _ = WWDualCamera.shared.start()
     }
 }
 

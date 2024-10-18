@@ -7,6 +7,53 @@
 
 import AVFoundation
 
+// MARK: - AVCaptureSession (function)
+extension AVCaptureSession {
+    
+    /// 加入手機設備 (相機、麥克風…)
+    /// - Parameters:
+    ///   - device: AVCaptureDevice
+    ///   - isConnections: Bool
+    /// - Returns: Result<Bool, Error>
+    func _canAddDevice(_ device: AVCaptureDevice, isConnections: Bool) -> Result<Bool, Error> {
+        
+        switch device._captureInput() {
+        case .failure(let error): return .failure(error)
+        case .success(let input): return .success(_canAddInput(input, isConnections: isConnections))
+        }
+    }
+}
+
+// MARK: - AVCaptureMultiCamSession (static function)
+extension AVCaptureMultiCamSession {
+    
+    /// [是否支援多鏡頭同時動作](https://applealmond.com/posts/58750)
+    /// - Returns: [Bool](https://developer.apple.com/documentation/avfoundation/avcapturemulticamsession/3183002-multicamsupported)
+    static func _isSupported() -> Bool {
+        return AVCaptureMultiCamSession.isMultiCamSupported
+    }
+    
+    /// 當前設備支持的最大同時使用鏡頭數 (真的加上Session就知道了)
+    /// - Returns: Int
+    static func _supportCount() -> Int {
+        
+        guard _isSupported() else { return 1 }
+        
+        let session = AVCaptureMultiCamSession()
+        let deviceTypes: [AVCaptureDevice.DeviceType] = [.builtInWideAngleCamera, .builtInTelephotoCamera, .builtInUltraWideCamera]
+        let devices = AVCaptureDevice._discovery(deviceTypes: deviceTypes, mediaType: .video, position: .unspecified)
+        
+        let count = devices.compactMap { device -> Bool? in
+            switch session._canAddDevice(device, isConnections: false) {
+            case .failure(_): return nil
+            case .success(let isSuccess): return (!isSuccess) ? nil : true
+            }
+        }.count
+        
+        return count
+    }
+}
+
 // MARK: - AVCaptureMultiCamSession
 extension AVCaptureMultiCamSession {
     
@@ -29,6 +76,18 @@ extension AVCaptureDevice {
         } catch {
             return .failure(error)
         }
+    }
+    
+    /// 搜尋影音裝置
+    /// - Parameters:
+    ///   - deviceTypes: [AVCaptureDevice.DeviceType]
+    ///   - mediaType: AVMediaType?
+    ///   - position: AVCaptureDevice.Position
+    /// - Returns: [AVCaptureDevice]
+    static func _discovery(deviceTypes: [AVCaptureDevice.DeviceType], mediaType: AVMediaType?, position: AVCaptureDevice.Position) -> [AVCaptureDevice] {
+        
+        let devices = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes, mediaType: mediaType, position: position).devices
+        return devices
     }
 }
 

@@ -11,7 +11,7 @@
 ### [Installation with Swift Package Manager](https://medium.com/彼得潘的-swift-ios-app-開發問題解答集/使用-spm-安裝第三方套件-xcode-11-新功能-2c4ffcf85b4b)
 ```bash
 dependencies: [
-    .package(url: "https://github.com/William-Weng/WWDualCamera.git", .upToNextMajor(from: "1.1.0"))
+    .package(url: "https://github.com/William-Weng/WWDualCamera.git", .upToNextMajor(from: "1.1.4"))
 ]
 ```
 
@@ -21,6 +21,7 @@ dependencies: [
 |multiSession|AVCaptureMultiCamSession|
 |isMultiCamSupported|是否支援多鏡頭同時動作|
 |isRunning|是否正在預覽畫面|
+|supportCount|當前設備支持的最大同時使用鏡頭數|
 
 ### Function - 可用函式
 |函式|說明|
@@ -54,7 +55,7 @@ final class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         initSetting()
-        WWDualCamera.shared.start()
+        _ = WWDualCamera.shared.start()
     }
 }
 

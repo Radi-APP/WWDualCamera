@@ -36,6 +36,9 @@ open class WWDualCamera: NSObject {
     
     /// 是否正在預覽畫面
     public var isRunning: Bool { multiSession.isRunning }
+    
+    /// 當前設備支持的最大同時使用鏡頭數
+    public var supportCount: Int { AVCaptureMultiCamSession._supportCount() }
         
     private override init() {}
     
