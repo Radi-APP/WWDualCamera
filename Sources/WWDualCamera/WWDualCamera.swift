@@ -18,7 +18,7 @@ open class WWDualCamera: NSObject {
     )
     
     public typealias CameraSessionOutput = (
-        device: AVCaptureDevice?,                   // 鏡頭裝置
+        input: AVCaptureDeviceInput?,               // 裝置輸入
         output: AVCaptureVideoDataOutput?,          // 影像輸出
         previewLayer: AVCaptureVideoPreviewLayer?,  // 預覽畫面
         error: Error?                               // 錯誤
@@ -51,7 +51,6 @@ public extension WWDualCamera {
     /// 開始執行
     /// - Returns: Result<[AVCaptureConnection], Error>
     func start() -> [AVCaptureConnection] {
-        
         multiSession.startRunning()
         return multiSession.connections
     }
@@ -59,7 +58,6 @@ public extension WWDualCamera {
     /// 關閉執行
     /// - Returns: 有連上Session的Connection
     func stop() -> [AVCaptureConnection] {
-        
         multiSession.stopRunning()
         return multiSession.connections
     }
@@ -90,14 +88,17 @@ public extension WWDualCamera {
         return isSuccess
     }
     
+    /// 加入新的連接
+    /// - Parameter connection: AVCaptureConnection?
+    /// - Returns: Result<[AVCaptureConnection], Error>
+    func canAddConnection(_ connection: AVCaptureConnection?) -> Bool {
+        return multiSession._canAddConnection(connection)
+    }
+    
     /// 相關的設定 (切換硬體)
     /// - Parameter action: AVCaptureMultiCamSession
     func configuration(action: (AVCaptureMultiCamSession) -> Void) {
-        
-        multiSession.beginConfiguration()
-        defer { multiSession.commitConfiguration() }
-        
-        action(multiSession)
+        multiSession._configuration { action(multiSession) }
     }
     
     /// 移除輸入裝置
@@ -128,6 +129,13 @@ public extension WWDualCamera {
         removeOutputs(multiSession.outputs)
     }
     
+    /// 安全的移除連接
+    /// - Parameter connection: AVCaptureConnection?
+    /// - Returns: Bool
+    func canRemoveConnection(_ connection: AVCaptureConnection?) -> Bool {
+        return multiSession._canRemoveConnection(connection)
+    }
+    
     /// 產生輸出資訊
     /// - Parameters:
     ///   - delegate: AVCaptureVideoDataOutputSampleBufferDelegate?
@@ -136,9 +144,7 @@ public extension WWDualCamera {
     ///   - stabilizationMode: AVCaptureVideoStabilizationMode
     /// - Returns: [CameraSessionOutput]
     func sessionOutputs(delegate: AVCaptureVideoDataOutputSampleBufferDelegate? = nil, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity = .resizeAspectFill, stabilizationMode: AVCaptureVideoStabilizationMode = .auto) -> [CameraSessionOutput] {
-        
-        let outputs = outputSetting(delegate: delegate, inputs: inputs, videoGravity: videoGravity, isAlwaysDiscardsLateVideoFrames: true, stabilizationMode: stabilizationMode)
-        return outputs
+        return outputsSetting(delegate: delegate, inputs: inputs, videoGravity: videoGravity, isAlwaysDiscardsLateVideoFrames: true, stabilizationMode: stabilizationMode)
     }
     
     /// [硬體 / 系統的用量指標](https://xiaodongxie1024.github.io/2019/04/15/20190413_iOS_VideoCaptureExplain/)
@@ -151,47 +157,64 @@ public extension WWDualCamera {
 /// MARK: - 小工具
 private extension WWDualCamera {
     
-    /// 影像輸出設定
+    /// 多影像輸出設定
     /// - Parameters:
     ///   - delegate: AVCaptureVideoDataOutputSampleBufferDelegate?
     ///   - inputs: [CameraSessionInput]
-    ///   - outputs: [CameraSessionOutput]
     ///   - videoGravity: AVLayerVideoGravity
     ///   - isAlwaysDiscardsLateVideoFrames: [Bool](https://blog.csdn.net/github_36843038/article/details/114550865)
+    ///   - stabilizationMode: AVCaptureVideoStabilizationMode
     /// - Returns: [CameraSessionOutput]
-    func outputSetting(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity, isAlwaysDiscardsLateVideoFrames: Bool, stabilizationMode: AVCaptureVideoStabilizationMode) -> [CameraSessionOutput] {
+    func outputsSetting(delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, inputs: [CameraSessionInput], videoGravity: AVLayerVideoGravity, isAlwaysDiscardsLateVideoFrames: Bool, stabilizationMode: AVCaptureVideoStabilizationMode) -> [CameraSessionOutput] {
         
         var outputs: [CameraSessionOutput] = []
         
         inputs.forEach { input in
             
-            let _device = AVCaptureDevice.DiscoverySession(deviceTypes: [input.deviceType], mediaType: .video, position: input.position).devices.first
-            var _output: CameraSessionOutput = (device: _device, output: nil, previewLayer: nil, error: nil)
-            
-            defer { outputs.append(_output) }
-            
-            guard let _device = _device else { _output.error = Constant.MyError.deviceIsEmpty; return }
-            
-            switch _device._captureInput() {
-            
-            case .failure(let error): _output.error = error
-            case .success(let _input):
-                
-                guard multiSession._canAddInput(_input, isConnections: true) else { _output.error = Constant.MyError.notAddInput; return }
-                
-                let queue = DispatchQueue(label: "\(Date().timeIntervalSince1970)")
-                let output = AVCaptureVideoDataOutput._build(delegate: delegate, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, videoSettings: [:], queue: queue)
-                
-                guard multiSession._canAddOutput(output, isConnections: true) else { _output.error = Constant.MyError.notAddOutput; return }
-                
-                let previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity)
-                previewLayer._stabilizationMode(stabilizationMode, device: _device)
-                
-                _output.output = output
-                _output.previewLayer = previewLayer
-            }
+            let output = outputSetting(input: input, delegate: delegate, videoGravity: videoGravity, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, stabilizationMode: stabilizationMode)
+            outputs.append(output)
         }
         
         return outputs
+    }
+    
+    /// 影像輸出設定
+    /// - Parameters:
+    ///   - delegate: AVCaptureVideoDataOutputSampleBufferDelegate?
+    ///   - input: CameraSessionInput
+    ///   - videoGravity: AVLayerVideoGravity
+    ///   - isAlwaysDiscardsLateVideoFrames: [Bool](https://blog.csdn.net/github_36843038/article/details/114550865)
+    ///   - stabilizationMode: AVCaptureVideoStabilizationMode
+    /// - Returns: CameraSessionOutput
+    func outputSetting(input: CameraSessionInput, delegate: AVCaptureVideoDataOutputSampleBufferDelegate?, videoGravity: AVLayerVideoGravity, isAlwaysDiscardsLateVideoFrames: Bool, stabilizationMode: AVCaptureVideoStabilizationMode) -> CameraSessionOutput {
+        
+        let device = AVCaptureDevice._default(input.deviceType, for: .video, position: input.position)
+        var sessionOutput: CameraSessionOutput = (input: nil, output: nil, previewLayer: nil, error: nil)
+        
+        guard let device = device else { sessionOutput.error = Constant.MyError.deviceIsEmpty; return sessionOutput }
+        
+        switch device._captureInput() {
+        
+        case .failure(let error): sessionOutput.error = error
+        case .success(let _input):
+            
+            guard multiSession._canAddInput(_input, isConnections: true) else { sessionOutput.error = Constant.MyError.notAddInput; break }
+            
+            let queue = DispatchQueue(label: "\(Date().timeIntervalSince1970)")
+            let output = AVCaptureVideoDataOutput._build(delegate: delegate, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, videoSettings: [:], queue: queue)
+            guard multiSession._canAddOutput(output, isConnections: true) else { sessionOutput.error = Constant.MyError.notAddOutput; break }
+            
+            let previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity, isConnections: false)
+            previewLayer._stabilizationMode(stabilizationMode, device: device)
+            guard let videoPort = _input._port(forType: .video) else { break }
+            
+            let previewLayerConnection = AVCaptureConnection(inputPort: videoPort, videoPreviewLayer: previewLayer)
+            guard multiSession._canAddConnection(previewLayerConnection) else { sessionOutput.error = Constant.MyError.notAddConnection; break }
+            
+            sessionOutput.output = output
+            sessionOutput.previewLayer = previewLayer
+        }
+        
+        return sessionOutput
     }
 }

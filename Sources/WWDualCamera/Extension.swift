@@ -22,6 +22,17 @@ extension AVCaptureSession {
         case .success(let input): return .success(_canAddInput(input, isConnections: isConnections))
         }
     }
+    
+    /// 設定硬體
+    /// - Parameter action: () -> Void
+    /// - Returns: T
+    func _configuration<T>(action: () -> T) -> T {
+        
+        beginConfiguration()
+        defer { commitConfiguration() }
+        
+        return action()
+    }
 }
 
 // MARK: - AVCaptureMultiCamSession (static function)
@@ -34,13 +45,13 @@ extension AVCaptureMultiCamSession {
     }
     
     /// 當前設備支持的最大同時使用鏡頭數 (真的加上Session就知道了)
+    /// - Parameter deviceTypes: 要支援的類型
     /// - Returns: Int
-    static func _supportCount() -> Int {
+    static func _supportCount(deviceTypes: [AVCaptureDevice.DeviceType] = [.builtInWideAngleCamera, .builtInTelephotoCamera, .builtInUltraWideCamera]) -> Int {
         
         guard _isSupported() else { return 1 }
         
         let session = AVCaptureMultiCamSession()
-        let deviceTypes: [AVCaptureDevice.DeviceType] = [.builtInWideAngleCamera, .builtInTelephotoCamera, .builtInUltraWideCamera]
         let devices = AVCaptureDevice._discovery(deviceTypes: deviceTypes, mediaType: .video, position: .unspecified)
         
         let count = devices.compactMap { device -> Bool? in
@@ -62,6 +73,48 @@ extension AVCaptureMultiCamSession {
     func _cost() -> Constant.MultiCamSessionCost {
         return (hardware: hardwareCost, systemPressure: systemPressureCost)
     }
+    
+    /// 安全的移除連接
+    /// - Parameter connection: AVCaptureConnection?
+    /// - Returns: Bool
+    func _canRemoveConnection(_ connection: AVCaptureConnection?) -> Bool {
+        
+        return _configuration {
+            
+            guard let connection = connection,
+                  connections.contains(connection)
+            else {
+                return false
+            }
+            
+            removeConnection(connection)
+            return true
+        }
+    }
+}
+
+// MARK: - AVCaptureDevice (static function)
+extension AVCaptureDevice {
+    
+    /// [取得該選項的影音裝置](https://www.wwdcnotes.com/notes/wwdc19/249/)
+    /// - Parameters:
+    ///   - deviceType: [AVCaptureDevice.DeviceType](https://blog.csdn.net/u011686167/article/details/130795604)
+    ///   - mediaType: AVMediaType?
+    ///   - position: AVCaptureDevice.Position
+    /// - Returns: AVCaptureDevice?
+    static func _default(_ deviceType: AVCaptureDevice.DeviceType, for mediaType: AVMediaType?, position: AVCaptureDevice.Position) -> AVCaptureDevice? { return AVCaptureDevice.default(deviceType, for: mediaType, position: position) }
+    
+    /// 搜尋影音裝置
+    /// - Parameters:
+    ///   - deviceTypes: [AVCaptureDevice.DeviceType]
+    ///   - mediaType: AVMediaType?
+    ///   - position: AVCaptureDevice.Position
+    /// - Returns: [AVCaptureDevice]
+    static func _discovery(deviceTypes: [AVCaptureDevice.DeviceType], mediaType: AVMediaType?, position: AVCaptureDevice.Position) -> [AVCaptureDevice] {
+        
+        let devices = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes, mediaType: mediaType, position: position).devices
+        return devices
+    }
 }
 
 // MARK: - AVCaptureDevice (function)
@@ -77,17 +130,16 @@ extension AVCaptureDevice {
             return .failure(error)
         }
     }
+}
+
+// MARK: - AVCaptureDeviceInput (function)
+extension AVCaptureDeviceInput {
     
-    /// 搜尋影音裝置
-    /// - Parameters:
-    ///   - deviceTypes: [AVCaptureDevice.DeviceType]
-    ///   - mediaType: AVMediaType?
-    ///   - position: AVCaptureDevice.Position
-    /// - Returns: [AVCaptureDevice]
-    static func _discovery(deviceTypes: [AVCaptureDevice.DeviceType], mediaType: AVMediaType?, position: AVCaptureDevice.Position) -> [AVCaptureDevice] {
-        
-        let devices = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes, mediaType: mediaType, position: position).devices
-        return devices
+    /// 取得該媒體類型的Port
+    /// - Parameter mediaType: AVMediaType
+    /// - Returns: AVCaptureInput.Port?
+    func _port(forType mediaType: AVMediaType) -> AVCaptureInput.Port? {
+        return ports.first(where: { $0.mediaType == mediaType })
     }
 }
 
@@ -128,14 +180,33 @@ extension AVCaptureSession {
         return true
     }
     
+    /// 加入新的連接
+    /// - Parameter connection: AVCaptureConnection?
+    /// - Returns: Bool
+    func _canAddConnection(_ connection: AVCaptureConnection?) -> Bool {
+        
+        return _configuration {
+            
+            guard let connection = connection,
+                  canAddConnection(connection)
+            else {
+                return false
+            }
+            
+            addConnection(connection)
+            return true
+        }
+    }
+    
     /// [產生、設定AVCaptureVideoPreviewLayer](https://www.jianshu.com/p/95f2cd87ad83)
     /// - Parameters:
     ///   - frame: [CGRect](https://developer.apple.com/documentation/avfoundation/avcapturevideopreviewlayer/1387426-init)
     ///   - videoGravity: [AVLayerVideoGravity => .resizeAspectFill](https://xiaodongxie1024.github.io/2019/04/15/20190413_iOS_VideoCaptureExplain/)
+    ///   - isConnections: [Bool](https://developer.apple.com/documentation/avfoundation/avcapturevideopreviewlayer/1387426-init)
     /// - Returns: AVCaptureVideoPreviewLayer
-    func _previewLayer(with frame: CGRect, videoGravity: AVLayerVideoGravity) -> AVCaptureVideoPreviewLayer {
+    func _previewLayer(with frame: CGRect, videoGravity: AVLayerVideoGravity, isConnections: Bool) -> AVCaptureVideoPreviewLayer {
         
-        let previewLayer = AVCaptureVideoPreviewLayer(session: self)
+        let previewLayer = isConnections ? AVCaptureVideoPreviewLayer(session: self) : AVCaptureVideoPreviewLayer(sessionWithNoConnection: self)
         
         previewLayer.frame = frame
         previewLayer.videoGravity = videoGravity
