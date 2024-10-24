@@ -201,18 +201,19 @@ private extension WWDualCamera {
             guard multiSession._canAddInput(_input, isConnections: true) else { sessionOutput.error = Constant.MyError.notAddInput; break }
             
             let queue = DispatchQueue(label: "\(Date().timeIntervalSince1970)")
-            let output = AVCaptureVideoDataOutput._build(delegate: delegate, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, videoSettings: [:], queue: queue)
-            guard multiSession._canAddOutput(output, isConnections: true) else { sessionOutput.error = Constant.MyError.notAddOutput; break }
+            let _output = AVCaptureVideoDataOutput._build(delegate: delegate, isAlwaysDiscardsLateVideoFrames: isAlwaysDiscardsLateVideoFrames, videoSettings: [:], queue: queue)
+            guard multiSession._canAddOutput(_output, isConnections: true) else { sessionOutput.error = Constant.MyError.notAddOutput; break }
             
-            let previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity, isConnections: false)
-            previewLayer._stabilizationMode(stabilizationMode, device: device)
+            let _previewLayer = multiSession._previewLayer(with: input.frame, videoGravity: videoGravity, isConnections: false)
+            _previewLayer._stabilizationMode(stabilizationMode, device: device)
             guard let videoPort = _input._port(forType: .video) else { break }
             
-            let previewLayerConnection = AVCaptureConnection(inputPort: videoPort, videoPreviewLayer: previewLayer)
+            let previewLayerConnection = AVCaptureConnection(inputPort: videoPort, videoPreviewLayer: _previewLayer)
             guard multiSession._canAddConnection(previewLayerConnection) else { sessionOutput.error = Constant.MyError.notAddConnection; break }
             
-            sessionOutput.output = output
-            sessionOutput.previewLayer = previewLayer
+            sessionOutput.input = _input
+            sessionOutput.output = _output
+            sessionOutput.previewLayer = _previewLayer
         }
         
         return sessionOutput
