@@ -1,10 +1,3 @@
-//
-//  ViewController.swift
-//  Example
-//
-//  Created by William.Weng on 2024/1/1.
-//
-
 import UIKit
 import AVFoundation
 import WWDualCamera
@@ -55,7 +48,7 @@ private extension ViewController {
             }
             
             if index == 1 {
-                previewLayer.cornerRadius = 12
+                previewLayer.cornerRadius = 20
                 previewLayer.masksToBounds = true
             }
             
