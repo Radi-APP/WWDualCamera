@@ -25,24 +25,23 @@ final class ViewController: UIViewController {
     }
 }
 
-// MARK: - 小工具
 private extension ViewController {
     
-    /// 初始化設定
+   
     func initSetting() {
         
-        // 获取屏幕尺寸
         let screenBounds = UIScreen.main.bounds
         let screenWidth = screenBounds.width
         let screenHeight = screenBounds.height
-        
-        // 计算上下各占一半的frame
-        let topHalfFrame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight / 2)
-        let bottomHalfFrame = CGRect(x: 0, y: screenHeight / 2, width: screenWidth, height: screenHeight / 2)
+       
+        let fullScreenFrame = CGRect(x: 0, y: 0, width: screenWidth, height: screenHeight)
+        let frontWidth = screenWidth * 0.35
+        let frontHeight = frontWidth * 1.3
+        let frontCameraFrame = CGRect(x: screenWidth - frontWidth - 16, y: screenHeight - frontHeight - 32, width: frontWidth, height: frontHeight)
         
         let inputs: [WWDualCamera.CameraSessionInput] = [
-            (frame: topHalfFrame, deviceType: .builtInWideAngleCamera, position: .front),      // 前置摄像头在上半部分
-            (frame: bottomHalfFrame, deviceType: .builtInWideAngleCamera, position: .back),    // 后置摄像头在下半部分
+            (frame: fullScreenFrame, deviceType: .builtInWideAngleCamera, position: .back),
+            (frame: frontCameraFrame, deviceType: .builtInWideAngleCamera, position: .front),
         ]
         
         let outputs = WWDualCamera.shared.sessionOutputs(inputs: inputs)
@@ -55,8 +54,10 @@ private extension ViewController {
                 return
             }
             
-            // 移除圆角效果，让两个摄像头显示区域一样大
-            // if (index == 1) { previewLayer.cornerRadius = subView.frame.width * 0.5 }
+            if index == 1 {
+                previewLayer.cornerRadius = 12
+                previewLayer.masksToBounds = true
+            }
             
             cameraOutputs.append(output)
             cameraPreviewLayers.append(previewLayer)
